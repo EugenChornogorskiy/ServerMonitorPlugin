@@ -1,0 +1,5 @@
+name: ServerMonitor
+version: '0.1'
+main: server.monitor.ServerMonitor
+description: A Paper plugin showcase
+api-version: '26.3'
