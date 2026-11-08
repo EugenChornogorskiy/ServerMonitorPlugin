@@ -6,6 +6,7 @@
  */
 
 plugins {
+    id 'jacoco'
     id 'application'
     id 'xyz.jpenilla.run-paper' version '3.0.0-beta.1'
 }
@@ -20,6 +21,8 @@ dependencies {
     testImplementation libs.junit.jupiter
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testImplementation 'io.papermc.paper:paper-api:26.3.build.+'
+    testImplementation 'org.mockito:mockito-core:5.+'
+    testImplementation 'com.squareup.okhttp3:mockwebserver:4.12.0'
     compileOnly 'io.papermc.paper:paper-api:26.3.build.+'
 }
 
@@ -39,5 +42,13 @@ tasks {
     }
     test {
         useJUnitPlatform()
+    }
+    finalizedBy jacocoTestReport
+}
+tasks.named('jacocoTestReport') {
+    dependsOn test
+    reports {
+        html.required = true
+        xml.required = false
     }
 }
