@@ -7,6 +7,7 @@ import server.monitor.model.PlayerManager;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class TaskManager {
@@ -14,17 +15,18 @@ public class TaskManager {
     public TaskManager(PlayerManager playerManager) {
         this.playerManager = playerManager;
     }
-    public void handleCommand(Sender sender, List<Task> tasks) {
-        for (Task task : tasks) {
+    public void handleCommand(Sender sender, Map<UUID,Task> tasks) {
+        for (Map.Entry<UUID,Task> task : tasks.entrySet()) {
+            Task value = task.getValue();
                 try {
-                    switch (task.type()) {
-                        case KICK -> kick(task.player_id());
-                        case BAN  -> ban(task.player_id());
-                        case GIVE -> give(task.player_id(), task.arguments().get("itemName"), Integer.parseInt(task.arguments().get("itemAmount")));
+                    switch (task.getValue().type()) {
+                        case KICK -> kick(value.player_id());
+                        case BAN  -> ban(value.player_id());
+                        case GIVE -> give(value.player_id(), value.arguments().get("itemName"), Integer.parseInt(value.arguments().get("itemAmount")));
                     }
-                    sender.sendCommandStatus(task.id(),true);
+                    sender.sendCommandStatus(value.id(),true);
                 } catch (NullPointerException e) {
-                    sender.sendCommandStatus(task.id(),false);
+                    sender.sendCommandStatus(value.id(),false);
                 }
         }
     }

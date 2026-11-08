@@ -35,7 +35,7 @@ class TaskManagerTest {
             bukkit.when(() -> Bukkit.getPlayer(playerId)).thenReturn(player);
 
             taskManager.handleCommand(sender,
-                    List.of(new Task(Task.Type.KICK, taskId, playerId, Map.of())));
+                    Map.of(taskId,new Task(Task.Type.KICK, taskId, playerId, Map.of())));
 
             verify(player).kick();
             verify(sender).sendCommandStatus(taskId, true);
@@ -50,7 +50,7 @@ class TaskManagerTest {
             bukkit.when(() -> Bukkit.getPlayer(playerId)).thenReturn(player);
 
             taskManager.handleCommand(sender,
-                    List.of(new Task(Task.Type.BAN, taskId, playerId, Map.of())));
+                    Map.of(taskId,new Task(Task.Type.BAN, taskId, playerId, Map.of())));
 
             verify(player).ban("You have banned", Duration.ofHours(2),"Admin");
             verify(sender).sendCommandStatus(taskId, true);
@@ -62,7 +62,7 @@ class TaskManagerTest {
             bukkit.when(() -> Bukkit.getPlayer(playerId)).thenReturn(null);
 
             taskManager.handleCommand(sender,
-                    List.of(new Task(Task.Type.KICK, taskId, playerId, Map.of())));
+                    Map.of(taskId,new Task(Task.Type.KICK, taskId, playerId, Map.of())));
 
             verify(sender).sendCommandStatus(taskId, false);
         }
@@ -73,7 +73,7 @@ class TaskManagerTest {
             bukkit.when(() -> Bukkit.getPlayer(playerId)).thenReturn(null);
 
             taskManager.handleCommand(sender,
-                    List.of(new Task(Task.Type.BAN, taskId, playerId, Map.of())));
+                    Map.of(taskId,new Task(Task.Type.BAN, taskId, playerId, Map.of())));
 
             verify(sender).sendCommandStatus(taskId, false);
         }
@@ -85,7 +85,7 @@ class TaskManagerTest {
             bukkit.when(() -> Bukkit.getPlayer(playerId)).thenReturn(null);
 
             taskManager.handleCommand(sender,
-                    List.of(new Task(Task.Type.GIVE, taskId, playerId, Map.of("itemName","DIAMOND_SWORD","itemAmount","1"))));
+                    Map.of(taskId,new Task(Task.Type.GIVE, taskId, playerId, Map.of("itemName","DIAMOND_SWORD","itemAmount","1"))));
 
             verify(sender).sendCommandStatus(taskId, false);
         }

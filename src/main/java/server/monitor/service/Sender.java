@@ -47,7 +47,7 @@ public class Sender {
         .thenAccept(response -> {
             String body = response.body();
             if (response.statusCode() == 200) {
-                List<Task> tasks = GSON.fromJson(body, Tasks.class).tasks();
+                Map<UUID,Task> tasks = GSON.fromJson(body, Tasks.class).tasks();
                 Bukkit.getScheduler().runTask(plugin, () -> taskManager.handleCommand(this, tasks));
             } else {
                 System.out.println("Error " + response.statusCode() + ": " + body);
@@ -64,7 +64,7 @@ public class Sender {
                 .build();
         client.sendAsync(request, HttpResponse.BodyHandlers.discarding());
     }
-    public record Tasks (List<Task> tasks) {
+    public record Tasks (Map<UUID,Task> tasks) {
 
     }
     public record TaskStatus(UUID id, boolean success) {}
