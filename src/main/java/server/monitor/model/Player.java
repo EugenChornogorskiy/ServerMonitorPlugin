@@ -10,10 +10,10 @@ public class Player {
     private String nickname;
     private LocalDateTime joinTime;
     private Position position;
-    private List<PlayerItem> inventory;
+    private List<Item> inventory;
     private int kills = 0;
     private int deaths = 0;
-    public Player(UUID id,String nickname, Position position, List<PlayerItem> inventory) {
+    public Player(UUID id,String nickname, Position position, List<Item> inventory) {
         this.id = id;
         this.nickname = nickname;
         this.joinTime = LocalDateTime.now();
@@ -21,7 +21,7 @@ public class Player {
         this.inventory = inventory;
     }
 
-    public void setInventory(List<PlayerItem> inventory) {
+    public void setInventory(List<Item> inventory) {
         this.inventory = inventory;
     }
 
@@ -46,7 +46,7 @@ public class Player {
         return nickname;
     }
 
-    public List<PlayerItem> getInventory() {
+    public List<Item> getInventory() {
         return inventory;
     }
 
@@ -55,5 +55,4 @@ public class Player {
     }
 
     public record Position(double x, double y, double z) {}
-    public record PlayerItem(int position, String name, int count) {}
 }

@@ -3,10 +3,12 @@ package server.monitor;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
+import okhttp3.mockwebserver.SocketPolicy;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import server.monitor.logging.Logger;
 import server.monitor.service.Sender;
 import server.monitor.service.TaskManager;
 
@@ -22,14 +24,17 @@ class SenderTest {
     private Sender sender;
     private TaskManager taskManager;
     private JavaPlugin plugin;
+    private Logger logger;
+
     @BeforeEach
     void setUp() throws Exception {
         server = new MockWebServer();
         server.start();
         taskManager = mock(TaskManager.class);
         plugin = mock(JavaPlugin.class);
+        logger = mock(Logger.class);
         String baseUrl = server.url("/").toString().replaceAll("/$", "");
-        sender = new Sender(baseUrl, "mykey", taskManager,plugin);
+        sender = new Sender(baseUrl, "mykey", taskManager,plugin,logger);
     }
 
     @AfterEach
@@ -78,4 +83,43 @@ class SenderTest {
         String body = req.getBody().readUtf8();
         assertTrue(body.contains(id.toString()));
     }
+    @Test
+    void authorizeAccount() throws Exception {
+        server.enqueue(new MockResponse().setResponseCode(200));
+        UUID id = UUID.randomUUID();
+
+        sender.authorizeAccount(id, "1111");
+
+        RecordedRequest req = server.takeRequest(5, TimeUnit.SECONDS);
+        assertNotNull(req);
+        assertEquals("/api/authorize/player", req.getPath());
+        String body = req.getBody().readUtf8();
+        assertTrue(body.contains(id.toString()));
+    }
+    @Test
+    void authorizeAccountFailureStatus() throws Exception {
+        server.enqueue(new MockResponse().setResponseCode(400));
+        UUID id = UUID.randomUUID();
+
+        Boolean result = sender.authorizeAccount(id, "1111").get(5, TimeUnit.SECONDS);
+        assertFalse(result);
+
+        RecordedRequest req = server.takeRequest(5, TimeUnit.SECONDS);
+        assertNotNull(req);
+        assertEquals("/api/authorize/player", req.getPath());
+        verify(logger).logSenderSend(eq("FAILED"), anyString());
+    }
+    @Test
+    void authorizeAccountFailure() throws Exception {
+        server.enqueue(new MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AT_START));
+        UUID id = UUID.randomUUID();
+
+        Boolean result = sender.authorizeAccount(id, "1111").get(5, TimeUnit.SECONDS);
+        assertFalse(result);
+
+        RecordedRequest req = server.takeRequest(5, TimeUnit.SECONDS);
+        assertNotNull(req);
+        verify(logger).logSenderSend(eq("FAILED"), anyString());
+    }
+
 }

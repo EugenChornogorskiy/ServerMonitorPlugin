@@ -20,6 +20,7 @@ public class PlayerManager {
     public void removePlayer(UUID id) {
         players.remove(id);
     }
+
     public void updateInventory(UUID id,PlayerInventory playerInventory) {
         if (isPlayerOnMap(id)) {
             players.get(id).setInventory(inventory(playerInventory));
@@ -48,13 +49,14 @@ public class PlayerManager {
     public Map<UUID, Player> getPlayers() {
         return Map.copyOf(players);
     }
-    public List<Player.PlayerItem> inventory(PlayerInventory playerInventory) {
+
+    public List<Item> inventory(PlayerInventory playerInventory) {
         ItemStack[] items = playerInventory.getContents();
-        List<Player.PlayerItem> playerItems = Collections.synchronizedList(new ArrayList<>());
+        List<Item> playerItems = Collections.synchronizedList(new ArrayList<>());
         for (int slot = 0; slot < items.length; slot++) {
             ItemStack item = items[slot];
             if (item != null && !item.getType().isAir()) {
-                playerItems.add(new Player.PlayerItem(slot,item.getType().name(),item.getAmount()));
+                playerItems.add(new Item(slot,item.getType().name(),item.getAmount()));
             }
         }
         return playerItems;

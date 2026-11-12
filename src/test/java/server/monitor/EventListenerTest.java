@@ -5,14 +5,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.PlayerInventory;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
+import server.monitor.command.CommandManager;
 import server.monitor.listener.EventListener;
+import server.monitor.logging.Logger;
 import server.monitor.model.PlayerManager;
 import server.monitor.service.Sender;
 import server.monitor.service.Task;
@@ -31,8 +30,8 @@ import static org.mockito.Mockito.verify;
 public class EventListenerTest {
     private final PlayerManager playerManager = mock(PlayerManager.class);
     private final TaskManager taskManager = mock(TaskManager.class);
-    private final EventListener eventListener = new EventListener(playerManager, taskManager);
-    private final Sender sender = mock(Sender.class);
+    private final CommandManager commandManager = mock(CommandManager.class);
+    private final EventListener eventListener = new EventListener(playerManager, taskManager,commandManager);
     private final UUID playerId = UUID.randomUUID();
     private final UUID taskId = UUID.randomUUID();
     private Task task(Task.Type type, Map<String, String> args) {
@@ -110,5 +109,14 @@ public class EventListenerTest {
         when(playerLocation.getZ()).thenReturn(0d);
         eventListener.onPlayerMove(pme);
         verify(playerManager).updatePosition(playerId,0d,0d,0d);
+    }
+    @Test
+    void playerCommandPreprocess() {
+        PlayerCommandPreprocessEvent pcpe = mock(PlayerCommandPreprocessEvent.class);
+        Player player = mock(Player.class);
+        when(pcpe.getPlayer()).thenReturn(player);
+        when(pcpe.getMessage()).thenReturn("/authorize 1111");
+        eventListener.onPlayerCommandPreprocess(pcpe);
+        verify(commandManager).handleCommand("/authorize 1111",player);
     }
 }

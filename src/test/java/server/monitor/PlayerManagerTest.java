@@ -4,6 +4,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import server.monitor.model.Item;
 import server.monitor.model.PlayerManager;
 import server.monitor.model.Player;
 
@@ -26,7 +27,7 @@ public class PlayerManagerTest {
         playerManager.clear();
         player = new Player(id,"Riven",
                 new Player.Position(0, 0, 0),
-                List.of(new Player.PlayerItem(10, "SWORD", 1)));
+                List.of(new Item(10, "SWORD", 1)));
     }
 
     @Test
@@ -99,7 +100,7 @@ public class PlayerManagerTest {
     }
     @Test
     void updatePlayerInventory() {
-        player.setInventory(List.of(new Player.PlayerItem(1, "Sword", 1)));
+        player.setInventory(List.of(new Item(1, "Sword", 1)));
         playerManager.addPlayer(id, player);
         PlayerInventory inv = mock(PlayerInventory.class);
         ItemStack[] items = new ItemStack[5];
@@ -109,7 +110,7 @@ public class PlayerManagerTest {
     }
     @Test
     void updateUnknownPlayerInventory() {
-        player.setInventory(List.of(new Player.PlayerItem(1, "Sword", 1)));
+        player.setInventory(List.of(new Item(1, "Sword", 1)));
         PlayerInventory inv = mock(PlayerInventory.class);
         ItemStack[] items = new ItemStack[5];
         when(inv.getContents()).thenReturn(items);
