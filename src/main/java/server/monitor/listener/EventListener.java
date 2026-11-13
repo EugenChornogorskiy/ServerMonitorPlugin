@@ -6,7 +6,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
 import server.monitor.command.CommandManager;
-import server.monitor.logging.Logger;
 import server.monitor.model.PlayerManager;
 import server.monitor.service.TaskManager;
 
@@ -60,7 +59,7 @@ public class EventListener implements org.bukkit.event.Listener {
     public void onPlayerCommandPreprocess (PlayerCommandPreprocessEvent event) {
         String message = event.getMessage();
         String command = message.substring(1).split(" ")[0].toLowerCase();
-        Set<String> WATCHED = Set.of("authorize","give");
+        Set<String> WATCHED = Set.of("authorize","get");
         if (WATCHED.contains(command)) {
             commandManager.handleCommand(message,event.getPlayer());
         }

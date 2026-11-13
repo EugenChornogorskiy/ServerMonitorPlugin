@@ -17,10 +17,10 @@ public class ServerMonitor extends JavaPlugin implements Listener {
         Logger logger = new Logger(getConfig().getString("log-file"),this);
         TaskManager taskManager = new TaskManager(playerManager);
         Sender sender = new Sender(getConfig().getString("url"),getConfig().getString("api-key"), taskManager, this,logger);
-        CommandManager commandManager = new CommandManager(sender,this);
+        CommandManager commandManager = new CommandManager(sender,this,logger,playerManager);
         getServer().getPluginManager().registerEvents(new EventListener(playerManager,taskManager,commandManager), this);
         Bukkit.getScheduler().runTaskTimer(this, () -> {
-            sender.send("/api/set/players", playerManager.getPlayers());
+            sender.send("/api/player/set", playerManager.getPlayers());
         }, 200L, 200L);
     }
 }

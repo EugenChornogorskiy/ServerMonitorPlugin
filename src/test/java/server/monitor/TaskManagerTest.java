@@ -3,7 +3,6 @@ package server.monitor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,7 +16,6 @@ import server.monitor.service.Task;
 import server.monitor.service.TaskManager;
 
 import java.time.Duration;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -30,9 +28,6 @@ class TaskManagerTest {
     private final UUID playerId = UUID.randomUUID();
     private final UUID taskId = UUID.randomUUID();
     private ServerMock server;
-    private Task task(Task.Type type, Map<String, String> args) {
-        return new Task(type, taskId, playerId, args);
-    }
     @BeforeEach
     void setUp() {
         server = MockBukkit.mock();

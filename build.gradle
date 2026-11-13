@@ -11,7 +11,7 @@ plugins {
     id 'xyz.jpenilla.run-paper' version '3.0.0-beta.1'
 }
 group = 'server.monitor'
-version = '0.1.1'
+version = '0.2'
 repositories {
     mavenCentral()
     maven { url = 'https://repo.papermc.io/repository/maven-public/' }

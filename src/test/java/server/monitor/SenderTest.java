@@ -46,13 +46,13 @@ class SenderTest {
     void sendPostsJsonWithApiKey() throws Exception {
         server.enqueue(new MockResponse().setResponseCode(200).setBody("{\"tasks\":[]}"));
 
-        sender.send("/api/set/players", Map.of());
+        sender.send("/api/player/set", Map.of());
 
         RecordedRequest req = server.takeRequest(5, TimeUnit.SECONDS);
         assertNotNull(req);
         assertAll(
                 () -> assertEquals("POST", req.getMethod()),
-                () -> assertEquals("/api/set/players", req.getPath()),
+                () -> assertEquals("/api/player/set", req.getPath()),
                 () -> assertEquals("mykey", req.getHeader("X-API-Key")),
                 () -> assertEquals("{}", req.getBody().readUtf8())
         );
@@ -63,10 +63,10 @@ class SenderTest {
     void sendDoesNotHandleTasksOnError() throws Exception {
         server.enqueue(new MockResponse().setResponseCode(500).setBody("fail"));
 
-        sender.send("/api/set/players", Map.of());
+        sender.send("/api/player/set", Map.of());
 
         server.takeRequest(5, TimeUnit.SECONDS);
-        Thread.sleep(300);   // дати колбеку відпрацювати
+        Thread.sleep(300);
         verifyNoInteractions(taskManager);
     }
 
@@ -79,7 +79,7 @@ class SenderTest {
 
         RecordedRequest req = server.takeRequest(5, TimeUnit.SECONDS);
         assertNotNull(req);
-        assertEquals("/api/command/status", req.getPath());
+        assertEquals("/api/task/status", req.getPath());
         String body = req.getBody().readUtf8();
         assertTrue(body.contains(id.toString()));
     }
@@ -92,7 +92,7 @@ class SenderTest {
 
         RecordedRequest req = server.takeRequest(5, TimeUnit.SECONDS);
         assertNotNull(req);
-        assertEquals("/api/authorize/player", req.getPath());
+        assertEquals("/api/player/authorize", req.getPath());
         String body = req.getBody().readUtf8();
         assertTrue(body.contains(id.toString()));
     }
@@ -101,25 +101,25 @@ class SenderTest {
         server.enqueue(new MockResponse().setResponseCode(400));
         UUID id = UUID.randomUUID();
 
-        Boolean result = sender.authorizeAccount(id, "1111").get(5, TimeUnit.SECONDS);
-        assertFalse(result);
+        Sender.Response<Boolean> result = sender.authorizeAccount(id, "1111").get(5, TimeUnit.SECONDS);
+        assertEquals(Sender.Response.Status.SERVER_ERROR, result.status());
 
         RecordedRequest req = server.takeRequest(5, TimeUnit.SECONDS);
         assertNotNull(req);
-        assertEquals("/api/authorize/player", req.getPath());
-        verify(logger).logSenderSend(eq("FAILED"), anyString());
+        assertEquals("/api/player/authorize", req.getPath());
+        verify(logger).log("ERROR","/api/player/authorize", "HTTP: 400");
     }
     @Test
     void authorizeAccountFailure() throws Exception {
         server.enqueue(new MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AT_START));
         UUID id = UUID.randomUUID();
 
-        Boolean result = sender.authorizeAccount(id, "1111").get(5, TimeUnit.SECONDS);
-        assertFalse(result);
+        Sender.Response<Boolean> result = sender.authorizeAccount(id, "1111").get(5, TimeUnit.SECONDS);
+        assertEquals(Sender.Response.Status.UNAVAILABLE, result.status());
 
         RecordedRequest req = server.takeRequest(5, TimeUnit.SECONDS);
         assertNotNull(req);
-        verify(logger).logSenderSend(eq("FAILED"), anyString());
+        verify(logger).log(eq("ERROR"), eq("/api/player/authorize"), anyString());
     }
 
 }

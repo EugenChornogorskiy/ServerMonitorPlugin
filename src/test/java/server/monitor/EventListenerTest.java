@@ -1,30 +1,23 @@
 package server.monitor;
 
 import io.papermc.paper.event.player.PlayerPickItemEvent;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.PlayerInventory;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
 import server.monitor.command.CommandManager;
 import server.monitor.listener.EventListener;
-import server.monitor.logging.Logger;
 import server.monitor.model.PlayerManager;
-import server.monitor.service.Sender;
 import server.monitor.service.Task;
 import server.monitor.service.TaskManager;
 
-import java.time.Duration;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 
 public class EventListenerTest {
@@ -34,9 +27,6 @@ public class EventListenerTest {
     private final EventListener eventListener = new EventListener(playerManager, taskManager,commandManager);
     private final UUID playerId = UUID.randomUUID();
     private final UUID taskId = UUID.randomUUID();
-    private Task task(Task.Type type, Map<String, String> args) {
-        return new Task(type, taskId, playerId, args);
-    }
 
     @Test
     void eventPlayerJoin() {

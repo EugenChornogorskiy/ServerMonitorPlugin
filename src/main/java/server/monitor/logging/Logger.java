@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
-import java.util.UUID;
 import java.util.logging.Level;
 
 public class Logger {
@@ -22,8 +21,8 @@ public class Logger {
         }
     }
 
-    public void logSenderSend(String status,String content) {
-        String line = LocalDateTime.now() + " | " + status + " | " + content
+    public void log(String status,String where,String content) {
+        String line = LocalDateTime.now() + " | " + status + " | " + where + " | " + content
                 + System.lineSeparator();
         writeLog(line);
     }

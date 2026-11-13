@@ -1,12 +1,8 @@
 package server.monitor.model;
 
-import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -26,11 +22,13 @@ public class PlayerManager {
             players.get(id).setInventory(inventory(playerInventory));
         }
     }
+
     public void updatePosition(UUID id,double x, double y, double z) {
         if (isPlayerOnMap(id)) {
             players.get(id).setPosition(new Player.Position(x,y,z));
         }
     }
+
     public void playerKill(org.bukkit.entity.Player player) {
         if (player.getKiller() != null){
             if (isPlayerOnMap(player.getKiller().getUniqueId())) {

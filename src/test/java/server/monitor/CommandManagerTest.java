@@ -10,14 +10,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 import server.monitor.command.CommandManager;
+import server.monitor.logging.Logger;
 import server.monitor.model.PlayerManager;
 import server.monitor.service.Sender;
-import server.monitor.service.Task;
-import server.monitor.service.TaskManager;
 
-import javax.annotation.processing.Completion;
-import java.time.Duration;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -26,16 +22,17 @@ import static org.mockito.Mockito.*;
 class CommandManagerTest {
     private final JavaPlugin plugin = mock(JavaPlugin.class);
     private final Sender sender = mock(Sender.class);
-    private final CommandManager commandManager = new CommandManager(sender,plugin);
+    private final PlayerManager playerManager = mock(PlayerManager.class);
+    private final Logger logger = mock(Logger.class);
+    private final CommandManager commandManager = new CommandManager(sender,plugin,logger,playerManager);
     private final UUID playerId = UUID.randomUUID();
-    private final UUID taskId = UUID.randomUUID();
     @Test
     void authorizeCommandHandle() {
         String message = "/authorize 1111";
         Player player = mock(Player.class);
         when(player.getUniqueId()).thenReturn(playerId);
         when(sender.authorizeAccount(playerId, "1111"))
-                .thenReturn(CompletableFuture.completedFuture(true));
+                .thenReturn(CompletableFuture.completedFuture(new Sender.Response<>(Sender.Response.Status.OK,true)));
 
         BukkitScheduler scheduler = mock(BukkitScheduler.class);
 
@@ -58,7 +55,7 @@ class CommandManagerTest {
         Player player = mock(Player.class);
         when(player.getUniqueId()).thenReturn(playerId);
         when(sender.authorizeAccount(playerId, "1111"))
-                .thenReturn(CompletableFuture.completedFuture(false));
+                .thenReturn(CompletableFuture.completedFuture(new Sender.Response<>(Sender.Response.Status.SERVER_ERROR,false)));
 
         BukkitScheduler scheduler = mock(BukkitScheduler.class);
 
@@ -71,8 +68,7 @@ class CommandManagerTest {
             verify(scheduler).runTask(eq(plugin), captor.capture());
 
             captor.getValue().run();
-
-            verify(player).sendMessage(Component.text("Failed to authorize your account", NamedTextColor.RED));
+            verify(player).sendMessage(Component.text("Server error", NamedTextColor.RED));
         }
     }
 
